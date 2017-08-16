@@ -1,0 +1,359 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Create Lokasi</title>
+</head>
+<body>
+    <script src="assets/jquery-3.1.1.min.js"></script>
+    <link href="assets/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="js/firebase.js"></script>
+        <style media="screen">
+        body{
+
+            display: flex;
+            min-height: 100vh;
+            width: 100%
+            padding:0;
+            margin: 0;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column; 
+        }
+
+        #uploader{
+            -webkit-appearance: none;
+            appearance:none;
+            width: 30%;
+            margin-bottom: 10px;
+        }
+
+    </style>
+
+    <h1>HALAMAN ADMIN</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 content">
+
+                <!--Lokasi-->
+                <div class="post">
+                    <div class="panel panel-default">
+                        <div class="panel panel-heading">
+                            <h2><a href="">Inputkan Data Lokasi</a></h2>
+                        </div>
+                        <div class="panel-body">
+                            <form>
+                                ID Lokasi:
+                                <input type="text" id="txtId" />
+                                <br />
+                                Nama Lokasi:
+                                <input type="text" id="txtNamaLokasi" />
+                                <br />
+                                Silahkan Upload Foto Lokasi :<br>
+                                <progress value="0" max="100" id="uploader">0%</progress>
+                                <input type="file" value="upload" id="fileButton">
+                                <br>
+                                <button id="btnInsert" type="button">KIRIM</button>
+                            </form>
+                        </div>
+                        <div class="panel-footer">
+                            Data yang anda isi adalah data dari lokasi petugas kebersihan atm bni
+                        
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--content-->
+                <div class="post">
+                    <div class="panel panel-default">
+                        <div class="panel panel-heading">
+                            <h2><a href="">Tampilkan Sebagian Data Lokasi</a></h2>
+                        </div>
+                        <div class="panel-body">
+                            <form>
+                                ID:
+                                <input type="text" id="txtId1" />
+                                <br />
+                                <button id="btnRead" type="button">Tampilkan</button>
+                            </form>
+                            <br />
+                            <table class="table table-striped" border="1">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="categoryList"></tbody>
+                            </table>
+                        </div>
+                        <div class="panel-footer">
+
+                        </div>
+                    </div>
+                </div>
+
+                <!--content-->
+                <div class="post">
+                    <div class="panel panel-default">
+                        <div class="panel panel-heading">
+                            <h2><a href="">Tampilkan Semua Data Lokasi</a></h2>
+                        </div>
+                        <div class="panel-body">
+                            <form>
+                                <button id="btnReadAll" type="button">Tampilkan</button>
+                            </form>
+                            <br />
+                            <table class="table table-striped" border="1">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lstTable"></tbody>
+                            </table>
+                        </div>
+                        <div class="panel-footer">
+
+                        </div>
+                    </div>
+                </div>
+
+                <!--content-->
+                <div class="post">
+                    <div class="panel panel-default">
+                        <div class="panel panel-heading">
+                            <h2><a href="">Ubah Data Lokasi</a></h2>
+                        </div>
+                        <div class="panel-body">
+                            <form>
+                                ID:
+                                <input type="text" id="txtId2" />
+                                <br />
+                                Data:
+                                <input type="text" id="txtNamaLokasi2" />
+                                <br />
+                                <button id="btnUpdate" type="button">Update</button>
+                            </form>
+                        </div>
+                        <div class="panel-footer">
+
+                        </div>
+                    </div>
+                </div>
+
+                <!--content-->
+                <div class="post">
+                    <div class="panel panel-default">
+                        <div class="panel panel-heading">
+                            <h2><a href="">Hapus Data Lokasi</a></h2>
+                        </div>
+                        <div class="panel-body">
+                            <form>
+                                ID:
+                                <input type="text" id="txtId3" />
+                                Nama Lokasi:
+                                <input type="text" id="txtNamaLokasi3" />
+                                <br />
+                                <button id="btnDelete" type="button">Delete</button>
+                            </form>
+                        </div>
+                        <div class="panel-footer">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+         </div>
+    </div>
+  <footer>@copyright 2017|NEWTRONIC SOLUTION</footer>
+
+<script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCBtCvc4Bqeqj6hw8ExViEQ__M8dT8E0J8",
+    authDomain: "projectadmin-a06b7.firebaseapp.com",
+    databaseURL: "https://projectadmin-a06b7.firebaseio.com",
+    projectId: "projectadmin-a06b7",
+    storageBucket: "projectadmin-a06b7.appspot.com",
+    messagingSenderId: "125242559054"
+  };
+  firebase.initializeApp(config);
+</script>
+    <script type="text/javascript">
+
+        function insertData(userId, namalokasi) {
+            firebase.database().ref('lokasi/' + userId).set({
+                lokasi: namalokasi
+            });          
+        }
+
+        function insertAutoKey(namalokasi) {
+            // A post entry.
+            var postData = {
+                lokasi: namalokasi
+            };
+
+            // Get a key for a new Post.
+            var newPostKey = firebase.database().ref().child('lokasi').push().key;
+            // Write the new post's data simultaneously in the posts list and the user's post list.
+            var updates = {};
+            updates['/lokasi/' + newPostKey] = postData;
+            return firebase.database().ref().update(updates);
+        }
+
+        function readData(userId) {
+            firebase.database().ref('/lokasi/' + userId).once('value').then(function (snapshot) {
+                if (snapshot.val() === null) {
+                    /* does not exist */
+                    alert('does not exist');
+                } else {
+                    var tr = '<tr>' +
+                                '<td>' + userId + '</td>' +
+                                '<td>' + snapshot.val().lokasi + '</td>' +
+                            '</tr>';
+                    $('#categoryList').append(tr);
+                }
+                console.log(snapshot.val());
+            });
+        }
+
+        function readAllData() {
+            var ref = firebase.database().ref().child("lokasi");
+
+            ref.on("value", function (snapshot) {
+                snapshot.forEach(function (childSnapshot) {
+                    // key will be "ada" the first time and "alan" the second time
+                    var key = childSnapshot.key;
+                    // childData will be the actual contents of the child
+                    var childData = childSnapshot.val();
+                    var tr = '<tr>' +
+                                '<td>' + key + '</td>' +
+                                '<td>' + childData.lokasi + '</td>' +
+                            '</tr>';
+                    $('#lstTable').append(tr);
+                    console.log(snapshot.val());
+                });
+            }, function (error) {
+                console.log("Error: " + error.code);
+            });
+        }
+
+        function updateData(userId, namalokasi) {
+            // A post entry.
+            var postData = {
+              lokasi:namalokasi
+            };
+            var personRef = firebase.database().ref().child("lokasi").child(userId);
+
+            personRef.once('value', function (snapshot) {
+
+                if (snapshot.val() === null) {
+                    /* does not exist */
+                    alert('does not exist');
+                } else {
+                    personRef.update(postData);
+                }
+
+            });
+        }
+
+
+
+        function deleteData(userId) {
+            var personRef = firebase.database().ref().child("lokasi").child(userId);
+            personRef.once('value', function (snapshot) {
+
+                if (snapshot.val() === null) {
+                    /* does not exist */
+                    alert('does not exist');
+                } else {
+                    personRef.remove();
+                }
+
+            });
+        }
+        $('#btnInsert').on('click', function () {
+            var id = $('#txtId').val();
+            var lokasi = $('#txtNamaLokasi').val();;
+            document.getElementById("txtId").value = "";
+            document.getElementById("txtNamaLokasi").value = "";
+            insertData(id, lokasi);
+        });
+        $('#btnInsertAuto').on('click', function () {
+            var lokasi = $('#txtNamaLokasi1').val();
+            document.getElementById("txtUNamaLokasi1").value = "";
+            insertAutoKey(lokasi);
+        });
+        $('#btnRead').on('click', function () {
+            var id = $('#txtId1').val();
+            if (id == '') {
+                return;
+            }
+            readData(id);
+        });
+        $('#btnReadAll').on('click', function () {
+            readAllData();
+        });
+        
+        $('#btnUpdate').on('click', function () {
+            var id = $('#txtId2').val();
+            var lokasi = $('#txtNamaLokasi2').val();
+            document.getElementById("txtId2").value = "";
+            document.getElementById("txtNamaLokasi2").value = "";
+            updateData(id, lokasi);
+        });
+        $('#btnDelete').on('click', function () {
+            var id = $('#txtId3').val();
+            var lokasi = $('#txtNamaLokasi3').val();
+            deleteData(id);
+        });
+        //--end codingan CRUD--//
+
+        //--codingan upload foto--//
+        //get element
+    var uploader = document.getElementById('uploader');
+    var fileButton = document.getElementById('fileButton');
+
+    //listen file selection
+    fileButton.addEventListener('change', function(e) {
+    
+    //get file
+    var file = e.target.files[0];
+    
+    //create a storage ref
+    var storageRef = firebase.storage().ref('Lokasi/' + file.name);
+
+    //upload file
+     var task = storageRef.put(file);
+
+     //update progress bar
+     task.on('state_changed',
+        function progress(snapshot){
+            var percentage = (snapshot.bytesTransferred/ snapshot.totalBytes) * 100;
+            uploader.value = percentage;
+
+        },
+
+        function eror(err){
+
+        },
+
+        function complete(){
+
+        }
+
+        );
+
+    });
+
+        //--end coding upload foto--//
+        
+    </script>
+
+
+</body>
+</html>
